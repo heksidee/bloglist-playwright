@@ -64,9 +64,17 @@ describe('Blog app', () => {
         await page.getByRole("button", { name: "Add blog" }).click()
       })
       test("like button works", async ({ page }) => {
-        const blogItem = page.locator("div.playwrightblog", { hasText: "Yoga"})
+        const blogItem = page.locator("div.playwrightblog", { hasText: "Yoga" })
         await blogItem.getByRole("button", { name: "View" }).click()
-        await page.getByRole("button", { name: "Like" }).click()
+
+        const likesText = blogItem.locator("text=Likes:")
+        const initialLikes = await likesText.textContent()
+
+        const initialCount = parseInt(initialLikes.replace("Likes: ", ""), 10)
+
+        await blogItem.getByRole("button", { name: "Like" }).click()
+
+        await expect(blogItem.locator(`text=Likes: ${initialCount + 1}`)).toBeVisible()
         
       })
     })
